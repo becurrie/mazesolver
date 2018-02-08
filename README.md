@@ -22,13 +22,17 @@ A good way to generate these mazes is to use the [Delorie](http://www.delorie.co
 
 #### Example Solution
 ```
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-                               
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+
+|                                                  
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-###############################
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+##############################                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+#+-+-+-+-+-+-+-+-+-+-+
+|                            ######################
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
 # The Structure
@@ -94,3 +98,123 @@ void Maze::buildMazeArray() {
         maze[i] = new char[cols];
 }
 ```
+
+We now have access to a maze\[row\]\[col\] variable that is accessible throughout the entire Maze.cpp file.
+
+## The Point Structure
+
+The final portion of designing the structure of the application included coming up with a simple way of storing information about the location inside of the grid. My solution for this was to create a new struct located inside of the StackNode.h header file.
+
+```c
+struct Point {
+public:
+    int col {0};
+    int row {1};
+
+    Point() = default;
+    Point(int row, int col) : col(row), row(col) {}
+    bool equals(Point p);
+};
+```
+
+This has a few advantages...
+- We can now Push a Point directly to our Stack when we need to add a new position to the maze.
+- It is easier to read and organize our location data now that it's encapsulated in it's own structure.
+- We can create a method to compare points directly to each other.
+
+At this point, I was ready to figure out a way to actually solve the maze.
+
+# Solving The Maze
+
+To solve this maze, there are a couple of things that need to be taken into account:
+- The solution to the maze must contain only one path.
+- No recursion may be used to solve the maze.
+- A Custom Stack is used to solve the maze.
+
+With that out of the way. The first step I took was thinking of a logical way to solve a maze in general.
+
+*Pseudocode*
+```
+while (current != end) {
+    check move east:
+        move easdt;
+        
+    check move south:
+        move south;
+        
+    check move west:
+        move west;
+        
+    check move north:
+        move north;
+        
+    check stack empty:
+        set current -> deadend;
+        current = top of stack;
+        pop stack;
+}
+```
+
+From this logic, we can validate that a specified move is possible, if there is no possible move, it means we have reached a dead end, so we can undo (Pop) from our Stack until a move is valid. Whenever a Pop() is performed, we also set that location in the maze to a Deadend character (in this case, I used a 'D').
+
+The implemented version of the pseudocode above looks like:
+```c
+void Maze::solve() {
+    Stack pos;
+    while (!here.equals(end)) {
+        if (checkMove(here, East)) {
+            Move(East, &pos, &here);
+            continue;
+        }
+        if (checkMove(here, South)) {
+            Move(South, &pos, &here);;
+            continue;
+        }
+        if (checkMove(here, West)) {
+            Move(West, &pos, &here);
+            continue;
+        }
+        if (checkMove(here, North)) {
+            Move(North, &pos, &here);
+            continue;
+        }
+            maze[here.row][here.col] = Dead;
+            here = pos.getTop();
+            pos.Pop();
+            continue;
+        }
+    }
+}
+```
+
+Here is a visual representation of a maze being solved.
+
+*Before solve():*
+```
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+
+|                                                  
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+*After solve():*
+```
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+##############################DDDDDDDDDDDDDDDDDDDD|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+#+-+-+-+-+-+-+-+-+-+-+
+|                            ######################
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+*After clean():*
+```
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+##############################                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+#+-+-+-+-+-+-+-+-+-+-+
+|                            ######################
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+### Contact
+- If you have any questions, feel free to contact me @ theycallmevotum@gmail.com
