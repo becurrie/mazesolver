@@ -187,8 +187,6 @@ void Maze::solve() {
     // (by default, this is set to row = 1, col = 0.
     Point here;
 
-    std::cout << endl << maze[end.row][end.col] << endl << endl;
-
     while (!here.equals(end)) {
 
         // Check if a move is valid and make that move.
