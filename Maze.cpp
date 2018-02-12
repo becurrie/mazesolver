@@ -24,8 +24,8 @@ Maze::Maze(const string &fileName) {
     // Set the rows and cols properties from maze file.
     setMazeSize();
 
-    // Set the current maze's end Point.
-    end = Point(cols - 1, rows - 2);
+    // Set the current maze's end Point, safe to assume every maze end point will be at the bottom right.
+    end = Point(rows - 2, cols - 1);
 
     // Finally, build up the dynamic 2d char array using the newly determined
     // rows and cols variables.
@@ -74,6 +74,7 @@ void Maze::setMazeSize() {
 void Maze::buildMazeArray() {
     maze = new char*[rows];
     emptyMaze = new char*[rows];
+
     for (int i = 0; i < rows; i++) {
         maze[i] = new char[cols];
         emptyMaze[i] = new char[cols];
@@ -117,7 +118,7 @@ void Maze::printBothMazes() {
         for (int c = 0; c < cols; c++) {
             cout << emptyMaze[i][c];
         }
-        cout << "  ^  ";
+        cout << "  /  ";
         for (int c = 0; c < cols; c++) {
             cout << maze[i][c];
         }
@@ -239,8 +240,8 @@ void Maze::solve() {
 void Maze::clean() {
     for (int i = 0; i < rows; i++) {
         for (int x = 0; x < cols; x++) {
-            if (maze[i][x] == 'D') {
-                maze[i][x] = ' ';
+            if (maze[i][x] == Dead) {
+                maze[i][x] = Free;
             }
         }
     }

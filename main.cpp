@@ -12,6 +12,6 @@ int main() {
     Maze maze5("mazex.txt");
     // [END] REQUIRED.
 
-    Maze maze6("hard.txt");
-    Maze maze7("hard_75_100.txt");
+//    Maze maze6("hard.txt");
+//    Maze maze7("hard_75_100.txt");
 }

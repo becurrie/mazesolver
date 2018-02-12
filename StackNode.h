@@ -14,7 +14,7 @@ public:
     int row {1};
 
     Point() = default;
-    Point(int row, int col) : col(row), row(col) {}
+    Point(int row, int col) : col(col), row(row) {}
     bool equals(Point p);
 };
 
